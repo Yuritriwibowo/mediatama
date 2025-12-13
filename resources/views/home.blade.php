@@ -353,28 +353,28 @@
 
         <div class="col-md-3 mb-4" data-aos="fade-up">
             <div class="category-box">
-                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="category-icon">
+                <img src="https://cdn-icons-png.flaticon.com/512/5831/5831920.png" class="category-icon">
                 <h6 class="fw-bold">Buku Teks</h6>
             </div>
         </div>
 
         <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="100">
             <div class="category-box">
-                <img src="https://cdn-icons-png.flaticon.com/512/3187/3187963.png" class="category-icon">
+                <img src="https://cdn-icons-png.flaticon.com/256/2258/2258853.png" class="category-icon">
                 <h6 class="fw-bold">Non Teks</h6>
             </div>
         </div>
 
         <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="200">
             <div class="category-box">
-                <img src="https://cdn-icons-png.flaticon.com/512/201/201623.png" class="category-icon">
+                <img src="https://cdn-icons-png.flaticon.com/256/11426/11426740.png" class="category-icon">
                 <h6 class="fw-bold">SMP</h6>
             </div>
         </div>
 
         <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="300">
             <div class="category-box">
-                <img src="https://cdn-icons-png.flaticon.com/512/2965/2965879.png" class="category-icon">
+                <img src="https://cdn-icons-png.flaticon.com/256/953/953610.png" class="category-icon">
                 <h6 class="fw-bold">SMA/SMK</h6>
             </div>
         </div>
