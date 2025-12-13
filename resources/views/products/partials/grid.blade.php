@@ -1,21 +1,43 @@
-@foreach ($books as $book)
+@if($books->count())
+    @foreach ($books as $book)
+        @php
+            $img = $book->image
+                ? asset(ltrim($book->image,'/'))
+                : asset('images/no-image.jpg');
+        @endphp
 
-    @php $img = ltrim($book->image, '/'); @endphp
+        <div class="col-md-3 mb-4 d-flex">
+            <a href="{{ route('produk.show', $book->id) }}"
+               class="text-decoration-none text-dark w-100">
 
-    <div class="col-md-3 mb-4">
-        <a href="{{ route('produk.show', $book->id) }}" style="text-decoration:none; color:inherit;">
-            <div class="card shadow-sm book-card">
-                <img src="{{ asset($img) }}" class="card-img-top">
-                <div class="card-body">
-                    <div class="category">{{ $book->category }}</div>
-                    <h6 class="card-title">{{ $book->title }}</h6>
+                <div class="product-card w-100">
+
+                    {{-- IMAGE --}}
+                    <img src="{{ $img }}" alt="{{ $book->title }}">
+
+                    {{-- CONTENT --}}
+                    <div class="content">
+
+                        <div class="product-category">
+                            {{ $book->category }}
+                        </div>
+
+                        <div class="book-title">
+                            {{ $book->title }}
+                        </div>
+
+                        <div class="price">
+                            Rp{{ number_format($book->price,0,',','.') }}
+                        </div>
+
+                    </div>
+
                 </div>
-            </div>
-        </a>
+            </a>
+        </div>
+    @endforeach
+@else
+    <div class="col-12 text-center py-5 text-muted">
+        Tidak ada produk pada kategori ini
     </div>
-
-@endforeach
-
-@if ($books->count() == 0)
-    <div class="text-center text-muted py-4">Tidak ada produk ditemukan.</div>
 @endif

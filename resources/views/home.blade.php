@@ -21,23 +21,11 @@
     }
 
 
-        /* ===============================
-    EVENT SLIDER – MODERN
+                /* ===============================
+    EVENT SLIDER – 2 EVENT PER SLIDE
     ================================ */
-    .event-slider-wrapper {
-        overflow-x: auto;
-        padding-bottom: 10px;
-    }
-
-    .event-slider {
-        display: flex;
-        gap: 24px;
-        scroll-snap-type: x mandatory;
-    }
-
-    .event-slide {
-        min-width: 320px;
-        scroll-snap-align: start;
+    .event-carousel .carousel-item {
+        padding: 10px 0;
     }
 
     .event-card {
@@ -46,21 +34,24 @@
         overflow: hidden;
         box-shadow: 0 8px 22px rgba(0,0,0,0.12);
         transition: .25s;
+        height: 100%;
     }
 
     .event-card:hover {
         transform: translateY(-6px);
-        box-shadow: 0 16px 30px rgba(0,0,0,0.2);
     }
 
     .event-image {
         width: 100%;
-        height: 200px;
+        height: 220px;
         object-fit: cover;
     }
 
     .event-content {
         padding: 18px;
+        display: flex;
+        flex-direction: column;
+        height: 260px;
     }
 
     .event-date {
@@ -71,43 +62,34 @@
         font-size: 13px;
         font-weight: 600;
         display: inline-block;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
+        width: fit-content;
     }
 
     .event-title {
-        font-size: 17px;
+        font-size: 16px;
         font-weight: 800;
-        color: #222;
+        min-height: 44px;
     }
 
     .event-desc {
         font-size: 14px;
         color: #555;
-        min-height: 42px;
+        flex-grow: 1;
     }
 
     .event-btn {
-        margin-top: 10px;
-        display: inline-block;
         font-weight: 700;
         color: #d6002a;
         text-decoration: none;
     }
+
     .event-btn:hover {
         text-decoration: underline;
     }
-
-    /* scrollbar */
-    .event-slider-wrapper::-webkit-scrollbar {
-        height: 6px;
-    }
-    .event-slider-wrapper::-webkit-scrollbar-thumb {
-        background: #d6002a;
-        border-radius: 10px;
-    }
     
 
-
+    
 
     /* =============================================
         HERO / BANNER PREMIUM
@@ -185,16 +167,20 @@
     }
 
 
-    /* =============================================
-        BOOK CARD PREMIUM (BEST SELLER)
-    ============================================== */
+        /* ===============================
+    BEST SELLER – FIX HEIGHT
+    ================================ */
     .book-card {
         border-radius: 16px;
         overflow: hidden;
         background: white;
         box-shadow: 0 6px 16px rgba(0,0,0,0.1);
         transition: .25s;
-        border: none;
+
+        /* 🔥 KUNCI TINGGI CARD */
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
     .book-card:hover {
@@ -202,24 +188,42 @@
         box-shadow: 0 16px 22px rgba(0,0,0,0.18);
     }
 
+    /* IMAGE SAMA */
     .book-card img {
         height: 260px;
         width: 100%;
         object-fit: cover;
     }
 
+    /* CONTENT FLEX */
+    .book-card .p-3 {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* KATEGORI */
+    .book-card .text-muted {
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+
+    /* 🔒 JUDUL DIKUNCI 2 BARIS */
     .book-title {
         font-size: 15px;
         font-weight: 700;
         color: #222;
-        min-height: 40px;
+        min-height: 44px; /* ± 2 baris */
     }
 
+    /* 🔒 HARGA SELALU DI BAWAH */
     .book-price {
+        margin-top: auto;
         color: #d6002a;
         font-size: 18px;
         font-weight: 800;
     }
+
 
 
     /* =============================================
@@ -272,47 +276,71 @@
 
 
 
-    {{-- =============================================
-        EVENT SLIDER – GRAMEDIA STYLE
+        {{-- =============================================
+    EVENT TERBARU – 2 EVENT PER SLIDE
 ============================================= --}}
 <h2 class="section-title mt-5 mb-4">📅 Event Terbaru</h2>
 
-<div class="event-slider-wrapper">
-    <div class="event-slider">
+<div id="eventCarousel" class="carousel slide event-carousel" data-bs-ride="carousel">
+    <div class="carousel-inner">
 
-        @forelse($events as $event)
-        <div class="event-slide">
-            <div class="event-card">
+        @foreach($events->chunk(2) as $index => $chunk)
+        <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
+            <div class="row">
 
-                <img src="{{ asset($event->image ?? 'images/no-image.jpg') }}"
-                     class="event-image">
+                @foreach($chunk as $event)
+                <div class="col-md-6 mb-4">
+                    <div class="event-card h-100">
 
-                <div class="event-content">
+                        {{-- IMAGE --}}
+                        @if($event->image)
+                            <img src="{{ asset($event->image) }}" class="event-image">
+                        @else
+                            <img src="https://via.placeholder.com/600x400?text=Event+Mediatama"
+                                 class="event-image">
+                        @endif
 
-                    <div class="event-date">
-                        {{ \Carbon\Carbon::parse($event->start_date)->translatedFormat('d F Y') }}
+                        {{-- CONTENT --}}
+                        <div class="event-content">
+
+                            <div class="event-date">
+                                {{ \Carbon\Carbon::parse($event->start_date)->translatedFormat('d F Y') }}
+                            </div>
+
+                            <div class="event-title mt-1">
+                                {{ $event->title }}
+                            </div>
+
+                            <div class="event-desc">
+                                {{ Str::limit(strip_tags($event->description), 90) }}
+                            </div>
+
+                            <a href="{{ route('events.show', $event->slug) }}" class="event-btn mt-2">
+                                Lihat Detail →
+                            </a>
+
+                        </div>
                     </div>
-
-                    <h5 class="event-title">{{ $event->title }}</h5>
-
-                    <p class="event-desc">
-                        {{ Str::limit($event->description, 90) }}
-                    </p>
-
-                    <a href="{{ route('events.show', $event->slug) }}"
-                       class="event-btn">
-                        Lihat Detail →
-                    </a>
-
                 </div>
+                @endforeach
+
             </div>
         </div>
-        @empty
-            <p class="text-muted">Belum ada event.</p>
-        @endforelse
+        @endforeach
 
     </div>
+
+    {{-- BUTTON CONTROL --}}
+    <button class="carousel-control-prev" type="button" data-bs-target="#eventCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+
+    <button class="carousel-control-next" type="button" data-bs-target="#eventCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
 </div>
+
+
 
 
 
@@ -356,34 +384,41 @@
 
 
 
-    {{-- =============================================
-            BEST SELLER SECTION
-    ============================================== --}}
+        {{-- =============================================
+        BEST SELLER SECTION (FIXED)
+    ============================================= --}}
     <h2 class="section-title mb-4">Buku Best Seller</h2>
 
     <div class="row">
-
         @foreach (\App\Models\Product::inRandomOrder()->take(4)->get() as $book)
-        <div class="col-md-3 mb-4" data-aos="fade-up">
-            <a href="{{ route('produk.show', $book->id) }}" class="text-decoration-none text-dark">
-                <div class="book-card">
-                    <img src="{{ asset(ltrim($book->image, '/')) }}" alt="Buku">
+        <div class="col-md-3 mb-4">
+            <a href="{{ route('produk.show', $book->id) }}"
+            class="text-decoration-none text-dark h-100 d-block">
+
+                <div class="book-card h-100">
+
+                    <img src="{{ asset(ltrim($book->image, '/')) }}" alt="{{ $book->title }}">
 
                     <div class="p-3">
-                        <div class="text-muted" style="font-size: 12px;">{{ $book->category }}</div>
+                        <div class="text-muted">
+                            {{ $book->category }}
+                        </div>
 
-                        <div class="book-title mt-1">{{ $book->title }}</div>
+                        <div class="book-title mt-1">
+                            {{ $book->title }}
+                        </div>
 
-                        <div class="book-price">
+                        <div class="book-price mt-2">
                             Rp{{ number_format($book->price, 0, ',', '.') }}
                         </div>
                     </div>
+
                 </div>
             </a>
         </div>
         @endforeach
-
     </div>
+
 
 
 

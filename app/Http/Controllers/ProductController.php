@@ -54,13 +54,18 @@ class ProductController extends Controller
     // AJAX FILTER CATEGORY
     // =========================================
     public function ajaxFilterCategory(Request $request)
-    {
-        $category = $request->category;
+{
+    $category = $request->category;
 
-        $books = Product::when($category, fn($q) => $q->where('category', $category))->get();
-
-        return view('products.partials.grid', compact('books'));
+    if ($category === '' || $category === null) {
+        $books = Product::latest()->get(); // SEMUA
+    } else {
+        $books = Product::where('category', $category)->latest()->get();
     }
+
+    return view('products.partials.grid', compact('books'))->render();
+}
+
 
     // =========================================
     // ADD TO CART + NOTIFIKASI POPUP

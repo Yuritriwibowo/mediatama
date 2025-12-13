@@ -19,10 +19,10 @@ use App\Models\Event;
 // ===============================
 Route::get('/', function () {
     $banners = Banner::all();
-    $events  = Event::latest()->take(6)->get();
-
+    $events = \App\Models\Event::latest()->take(6)->get();
     return view('home', compact('banners', 'events'));
 });
+
 
 // ===============================
 // PRODUK
@@ -58,6 +58,17 @@ Route::get('/events/{slug}', [EventController::class, 'show'])->name('events.sho
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+
+// ===============================
+// AJAX PRODUK (FILTER & SEARCH)
+// ===============================
+Route::get('/ajax/filter-kategori', [ProductController::class, 'ajaxFilterCategory'])
+    ->name('ajax.filter.kategori');
+
+Route::get('/ajax/search-produk', [ProductController::class, 'ajaxSearch'])
+    ->name('ajax.search.produk');
+
 
 /*
 |--------------------------------------------------------------------------

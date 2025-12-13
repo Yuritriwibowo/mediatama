@@ -3,13 +3,19 @@
 @section('content')
 <div class="container">
 
-<h3 class="fw-bold mb-4">📅 Manajemen Event</h3>
+<h3 class="mb-3">📅 Manajemen Event</h3>
 
-<a href="{{ route('admin.events.create') }}"
-   class="btn btn-danger mb-4"
-   style="border-radius:12px;">
-   + Tambah Event
-</a>
+<div class="d-flex gap-2 mb-3">
+    <a href="{{ route('admin.events.create') }}" class="btn btn-danger">
+        + Tambah Event
+    </a>
+
+    <a href="{{ route('admin.products') }}" class="btn btn-primary">
+        📦 Manajemen Produk
+    </a>
+</div>
+
+
 
 @if(session('success'))
 <div class="alert alert-success">{{ session('success') }}</div>
