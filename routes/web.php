@@ -77,6 +77,11 @@ Route::get('/ajax/search-produk', [ProductController::class, 'ajaxSearch'])
 */
 Route::middleware('auth')->group(function () {
 
+
+
+     Route::get('/dashboard', [ProductController::class, 'adminIndex'])
+        ->name('dashboard');
+
     // ===============================
     // ADMIN PRODUK
     // ===============================

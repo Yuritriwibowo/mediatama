@@ -34,6 +34,7 @@
         </div>
 
         <button class="btn btn-danger px-4 py-2">Simpan</button>
+        <a href="{{ url()->previous() }}" class="btn btn-outline-secondary me-2">← Kembali</a>
     </form>
 
 </div>
