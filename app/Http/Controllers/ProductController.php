@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 
+
 class ProductController extends Controller
 {
     // =========================================
@@ -71,27 +72,28 @@ class ProductController extends Controller
     // ADD TO CART + NOTIFIKASI POPUP
     // =========================================
     public function addToCart($id)
-    {
-        $product = Product::findOrFail($id);
+{
+    $product = Product::findOrFail($id);
 
-        $cart = session()->get('cart', []);
+    $cart = session()->get('cart', []);
 
-        if (isset($cart[$id])) {
-            $cart[$id]['qty'] += 1;
-        } else {
-            $cart[$id] = [
-                'title'    => $product->title,
-                'category' => $product->category,
-                'image'    => $product->image,
-                'price'    => $product->price,
-                'qty'      => 1
-            ];
-        }
-
-        session()->put('cart', $cart);
-
-        return redirect()->back()->with('added', $product->title);
+    if (isset($cart[$id])) {
+        $cart[$id]['qty'] += 1;
+    } else {
+        $cart[$id] = [
+            'title'    => $product->title,
+            'category' => $product->category,
+            'image'    => $product->image,
+            'price'    => $product->price,
+            'qty'      => 1
+        ];
     }
+
+    session()->put('cart', $cart);
+
+    return redirect()->back()->with('added', $product->title);
+}
+
 
     // =========================================
     // CART PAGE

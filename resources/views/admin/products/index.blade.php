@@ -3,7 +3,21 @@
 @section('content')
 <div class="container">
 
-    <h3 class="fw-bold mb-4">📚 Manajemen Produk</h3>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h3 class="fw-bold mb-0">📚 Manajemen Produk</h3>
+
+    <form action="{{ route('logout') }}" method="POST">
+        @csrf
+        <button type="submit"
+                class="btn btn-outline-danger"
+                onclick="return confirm('Yakin ingin logout?')">
+            🚪 Logout
+        </button>
+    </form>
+
+</div>
+
 
     {{-- BUTTON PRODUK & EVENT --}}
     <div class="d-flex gap-2 mb-4">
