@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Event;          // ← WAJIB ADA
 use App\Models\DpConfirmation;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 
@@ -166,7 +167,7 @@ class ProductController extends Controller
     // =========================================
     // CHECKOUT VIA WHATSAPP
     // =========================================
-        public function checkoutWa()
+       public function checkoutWa()
     {
         $cart = session()->get('cart', []);
 
@@ -175,37 +176,29 @@ class ProductController extends Controller
         }
 
         $total = 0;
-
         foreach ($cart as $item) {
             $total += $item['price'] * $item['qty'];
         }
 
-        // DP 50%
         $dp = $total * 0.5;
 
-        // SIMPAN KE DATABASE (DP PENDING)
-        DpConfirmation::create([
+        // SIMPAN TRANSAKSI
+        $trx = DpConfirmation::create([
             'customer_name' => 'Via WhatsApp',
             'total_amount'  => $total,
             'dp_amount'     => $dp,
             'status'        => 'pending'
         ]);
 
-        // PESAN WA
-        $msg = "Halo, saya ingin memesan buku berikut:%0A%0A";
+        
 
-        foreach ($cart as $item) {
-            $msg .= "- {$item['title']} ({$item['category']}), Qty: {$item['qty']}%0A";
-        }
+        // HAPUS CART
+        session()->forget('cart');
 
-        $msg .= "%0ATotal: Rp " . number_format($total, 0, ',', '.');
-        $msg .= "%0ADP (50%): Rp " . number_format($dp, 0, ',', '.');
-        $msg .= "%0A%0ASaya akan melakukan pembayaran DP.";
-
-        $wa = "628159777660";
-
-        return redirect("https://wa.me/$wa?text=$msg");
+        // 👉 TAB LAMA KE UPLOAD BUKTI
+        return redirect()->route('upload.bukti', $trx->id);
     }
+
 
 
     // =========================================
@@ -231,6 +224,64 @@ class ProductController extends Controller
         return view('admin.products.index', compact('products'));
     }
 
+    // =========================================
+    // LAPORAN TRANSAKSI DP
+    // =========================================
+    public function laporanTransaksi()
+    {
+        $data = \App\Models\DpConfirmation::latest()->get();
+        return view('admin.laporan.transaksi', compact('data'));
+    }
+
+    // EXPORT LAPORAN PDF
+    public function exportLaporanPdf()
+    {
+        $data = \App\Models\DpConfirmation::latest()->get();
+
+        $pdf = Pdf::loadView('admin.laporan.transaksi_pdf', compact('data'))
+            ->setPaper('A4', 'portrait');
+
+        return $pdf->download('laporan-transaksi-mediatama.pdf');
+    }
+
+    // =========================================
+    // FORM UPLOAD BUKTI TRANSFER DP / LUNAS
+    // =========================================
+    public function formUploadBukti($id)
+    {
+        $trx = DpConfirmation::findOrFail($id);
+        return view('upload_bukti', compact('trx'));
+    }
+
+    // SIMPAN UPLOAD BUKTI TRANSFER
+    public function storeUploadBukti(Request $request, $id)
+    {
+        $trx = DpConfirmation::findOrFail($id);
+
+        $request->validate([
+            'payment_proof' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'payment_type'  => 'required|in:dp,full'
+        ]);
+
+        // Upload file
+        $filename = time() . '_' . $request->payment_proof->getClientOriginalName();
+        $request->payment_proof->move(public_path('uploads/bukti'), $filename);
+
+        // Hitung nominal
+        $expected = $request->payment_type === 'dp'
+            ? $trx->total_amount * 0.5
+            : $trx->total_amount;
+
+        // Update otomatis
+        $trx->update([
+            'payment_proof' => 'uploads/bukti/' . $filename,
+            'payment_type'  => $request->payment_type,
+            'status'        => $request->payment_type === 'dp' ? 'dp_confirmed' : 'paid'
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'Bukti transfer berhasil diupload dan otomatis dikonfirmasi.');
+    }
 
 
     // =========================================

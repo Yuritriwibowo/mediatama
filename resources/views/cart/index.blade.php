@@ -129,24 +129,88 @@
         {{-- ============================
              RINGKASAN TOTAL
         ============================ --}}
-        <div class="col-md-4">
-
-            <div class="total-box mb-4">
-
-                <h5 class="fw-bold">Total Pembayaran</h5>
+                  <div class="d-flex justify-content-between mt-2">
+                    <span>Total:</span>
+                    <span                                @php
+                    $dp = $total * 0.5;
+                    $sisa = $total - $dp;
+                @endphp
 
                 <div class="d-flex justify-content-between mt-2">
-                    <span>Total:</span>
-                    <span class="fw-bold text-danger">
+                    <span>Total Belanja:</span>
+                    <span class="fw-bold">
                         Rp {{ number_format($total, 0, ',', '.') }}
                     </span>
                 </div>
 
-                <a href="{{ route('cart.checkout') }}"
-                   class="btn btn-success w-100 mt-3 py-2"
-                   style="border-radius: 10px;">
+                <div class="d-flex justify-content-between mt-2 text-danger">
+                    <span>DP (50%):</span>
+                    <span class="fw-bold">
+                        Rp {{ number_format($dp, 0, ',', '.') }}
+                    </span>
+                </div>
+
+                <div class="d-flex justify-content-between mt-2">
+                    <span>Sisa Pembayaran:</span>
+                    <span>
+                        Rp {{ number_format($sisa, 0, ',', '.') }}
+                    </span>
+                </div>
+
+                <div class="alert alert-warning mt-3 mb-0">
+                    Pembayaran minimal <strong>50%</strong> (DP) wajib dilakukan sebelum barang dikirim.
+                </div>
+                </div>
+
+
+                <form id="checkoutForm" action="{{ route('cart.checkout') }}" method="GET">
+                <button type="button"
+                    onclick="checkoutProcess()"
+                    class="btn btn-danger w-100 mb-3">
                     💬 Checkout via WhatsApp
-                </a>
+                </button>
+                </form>
+                
+               <script>
+                const cartData = @json($cart);
+                </script>
+
+                <script>
+                function checkoutProcess() {
+
+                    const phone = '628159777660'; // NOMOR WA ADMIN
+                    let message = "Halo Admin Mediatama,\n\n";
+                    message += "Saya ingin checkout pesanan berikut:\n\n";
+
+                    let total = 0;
+
+                    Object.values(cartData).forEach(item => {
+                        const subTotal = item.price * item.qty;
+                        total += subTotal;
+
+                        message += `- ${item.title} (Qty: ${item.qty}) - Rp ${subTotal.toLocaleString('id-ID')}\n`;
+                    });
+
+                    const dp = total * 0.5;
+
+                    message += "\n-------------------------\n";
+                    message += `Total: Rp ${total.toLocaleString('id-ID')}\n`;
+                    message += `DP 50%: Rp ${dp.toLocaleString('id-ID')}\n\n`;
+                    message += "Terima kasih.";
+
+                    const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+                    // 🔹 TAB BARU → WHATSAPP
+                    window.open(waUrl, '_blank');
+
+                    // 🔹 TAB LAMA → CHECKOUT (UPLOAD BUKTI)
+                    document.getElementById('checkoutForm').submit();
+                }
+                </script>
+
+
+
+
 
             </div>
 

@@ -8,6 +8,7 @@ use App\Http\Controllers\EventController;
 use App\Models\Banner;
 use App\Models\Event;
 
+
 /*
 |--------------------------------------------------------------------------
 | PUBLIC ROUTES
@@ -103,8 +104,29 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/events/{id}/edit', [EventController::class, 'edit'])->name('admin.events.edit');
     Route::post('/admin/events/{id}/update', [EventController::class, 'update'])->name('admin.events.update');
     Route::delete('/admin/events/{id}', [EventController::class, 'destroy'])->name('admin.events.delete');
+    
+    // ===============================
+    // ADMIN LAPORAN TRANSAKSI
+    // ===============================
+    Route::get('/admin/laporan/transaksi', [ProductController::class, 'laporanTransaksi'])->name('admin.laporan.transaksi');
+    Route::get('/admin/laporan/transaksi/pdf', [ProductController::class, 'exportLaporanPdf'])->name('admin.laporan.transaksi.pdf');
+   
+    // ===============================
+    // UPLOAD BUKTI TRANSFER (SETELAH CHECKOUT)
+    // ===============================
+    Route::get('/upload-bukti/{id}', [ProductController::class, 'formUploadBukti'])->name('upload.bukti');
+    Route::post('/upload-bukti/{id}', [ProductController::class, 'storeUploadBukti'])->name('upload.bukti.store');
 
+    // CHECKOUT SIMPAN ORDER
+    Route::post('/cart/checkout', [ProductController::class, 'checkout'])->name('cart.checkout');
+
+
+
+
+   
+    // ===============================
     // ADMIN DP
+    // ===============================
     Route::get('/admin/dp', function () {
         $dpList = \App\Models\DpConfirmation::latest()->get();
         return view('admin.dp.index', compact('dpList'));
@@ -117,5 +139,6 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('admin.dp.index')
             ->with('success', 'DP berhasil dikonfirmasi.');
     })->name('admin.dp.confirm');
+
 
 });

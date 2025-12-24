@@ -86,6 +86,12 @@
         💳 Konfirmasi DP
     </a>
 
+    <a href="{{ route('admin.laporan.transaksi') }}"
+        class="{{ request()->routeIs('admin.laporan.transaksi*') ? 'active' : '' }}">
+        📄 Laporan Transaksi
+    </a>
+
+
     <hr class="text-white">
 
     <a href="#"

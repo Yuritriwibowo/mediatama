@@ -18,6 +18,8 @@ return new class extends Migration
         $table->decimal('dp_amount', 12, 2);
         $table->enum('status', ['pending', 'confirmed'])->default('pending');
         $table->text('note')->nullable();
+        $table->string('payment_proof')->nullable();
+        $table->enum('payment_type', ['dp', 'full'])->nullable();
         $table->timestamps();
     });
 }
