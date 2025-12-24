@@ -168,36 +168,36 @@ class ProductController extends Controller
     // CHECKOUT VIA WHATSAPP
     // =========================================
        public function checkoutWa()
-    {
-        $cart = session()->get('cart', []);
+        {
+            $cart = session('cart', []);
 
-        if (empty($cart)) {
-            return back()->with('error', 'Keranjang masih kosong!');
+            if (empty($cart)) {
+                return redirect()->route('cart.page')
+                    ->with('error', 'Keranjang kosong');
+            }
+
+            $total = 0;
+            foreach ($cart as $item) {
+                $total += $item['price'] * $item['qty'];
+            }
+
+            $dp = $total * 0.5;
+
+            // 🔥 SIMPAN KE VARIABEL
+            $trx = \App\Models\DpConfirmation::create([
+                'customer_name' => 'Customer Website',
+                'order_source'  => 'website',
+                'total_amount'  => $total,
+                'dp_amount'     => $dp,
+                'status'        => 'pending',
+            ]);
+
+            // 🔹 BERSIHKAN KERANJANG
+            session()->forget('cart');
+
+            // 🔹 REDIRECT KE UPLOAD BUKTI (TAB LAMA)
+            return redirect()->route('upload.bukti', $trx->id);
         }
-
-        $total = 0;
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['qty'];
-        }
-
-        $dp = $total * 0.5;
-
-        // SIMPAN TRANSAKSI
-        $trx = DpConfirmation::create([
-            'customer_name' => 'Via WhatsApp',
-            'total_amount'  => $total,
-            'dp_amount'     => $dp,
-            'status'        => 'pending'
-        ]);
-
-        
-
-        // HAPUS CART
-        session()->forget('cart');
-
-        // 👉 TAB LAMA KE UPLOAD BUKTI
-        return redirect()->route('upload.bukti', $trx->id);
-    }
 
 
 

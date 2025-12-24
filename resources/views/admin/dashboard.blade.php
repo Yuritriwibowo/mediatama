@@ -46,14 +46,15 @@
 
     </div>
 
-    {{-- ================= AKTIVITAS TERBARU ================= --}}
+    {{-- ================= DP TERBARU ================= --}}
     <div class="card shadow-sm border-0 rounded-4 mb-4">
         <div class="card-body">
             <h5 class="fw-bold mb-3">🔔 DP Terbaru</h5>
 
             <table class="table align-middle">
-                <thead>
+                <thead class="table-light">
                     <tr>
+                        <th>ID Order</th>
                         <th>Customer</th>
                         <th>Total</th>
                         <th>DP</th>
@@ -63,32 +64,53 @@
                 <tbody>
                     @forelse ($latestDp as $dp)
                         <tr>
+                            {{-- ID ORDER --}}
+                            <td>
+                                <span class="badge bg-secondary">
+                                    ORD-{{ str_pad($dp->id, 5, '0', STR_PAD_LEFT) }}
+                                </span>
+                            </td>
+
+                            {{-- CUSTOMER --}}
                             <td>{{ $dp->customer_name ?? 'Via WhatsApp' }}</td>
-                            <td>Rp {{ number_format($dp->total_price, 0, ',', '.') }}</td>
+
+                            {{-- TOTAL --}}
+                            <td>
+                                Rp {{ number_format($dp->total_price, 0, ',', '.') }}
+                            </td>
+
+                            {{-- DP --}}
                             <td class="text-danger fw-bold">
                                 Rp {{ number_format($dp->dp_amount, 0, ',', '.') }}
                             </td>
+
+                            {{-- STATUS --}}
                             <td>
-                                @if($dp->status == 'pending')
+                                @if($dp->status === 'pending')
                                     <span class="badge bg-warning">Pending</span>
-                                @else
+                                @elseif($dp->status === 'confirmed')
                                     <span class="badge bg-success">Confirmed</span>
+                                @elseif($dp->status === 'paid')
+                                    <span class="badge bg-primary">Lunas</span>
+                                @else
+                                    <span class="badge bg-secondary">
+                                        {{ ucfirst($dp->status) }}
+                                    </span>
                                 @endif
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center text-muted">
+                            <td colspan="5" class="text-center text-muted">
                                 Belum ada data DP.
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
+
         </div>
     </div>
-
-    
 
 </div>
 @endsection
