@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\DpConfirmation;
 use App\Models\Product;
+use App\Models\Event;          // ← WAJIB ADA
+use App\Models\DpConfirmation;
+
 
 
 
@@ -207,13 +209,29 @@ class ProductController extends Controller
 
 
     // =========================================
-    // ADMIN LIST PRODUK
+    // DASHBOARD ADMIN
+    // =========================================
+    public function dashboard()
+    {
+        return view('admin.dashboard', [
+            'totalProduk'  => Product::count(),
+            'totalEvent'   => Event::count(),
+            'dpPending'    => DpConfirmation::where('status', 'pending')->count(),
+            'dpConfirmed'  => DpConfirmation::where('status', 'confirmed')->count(),
+            'latestDp'     => DpConfirmation::latest()->take(5)->get(),
+        ]);
+    }
+
+    // =========================================
+    // ADMIN LIST PRODUK (CRUD)
     // =========================================
     public function adminIndex()
     {
         $products = Product::latest()->paginate(10);
         return view('admin.products.index', compact('products'));
     }
+
+
 
     // =========================================
     // FORM TAMBAH PRODUK

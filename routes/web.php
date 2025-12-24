@@ -80,8 +80,9 @@ Route::middleware('auth')->group(function () {
 
     
 
-     Route::get('/dashboard', [ProductController::class, 'adminIndex'])
-        ->name('dashboard');
+    Route::get('/admin/dashboard', [ProductController::class, 'dashboard'])
+    ->name('admin.dashboard');
+
 
     // ===============================
     // ADMIN PRODUK

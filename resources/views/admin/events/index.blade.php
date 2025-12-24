@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
 <div class="container">
@@ -7,27 +7,14 @@
 
     <h3 class="fw-bold mb-0">📅 Manajemen Event</h3>
 
-    <form action="{{ route('logout') }}" method="POST">
-        @csrf
-        <button type="submit"
-                class="btn btn-outline-danger"
-                onclick="return confirm('Yakin ingin logout?')">
-            🚪 Logout
-        </button>
-    </form>
+    <a href="{{ route('admin.events.create') }}"
+       class="btn btn-outline-danger"
+       style="border-radius: 12px; font-weight:600;">
+        ➕ Tambah Event
+    </a>
 
 </div>
 
-
-<div class="d-flex gap-2 mb-3">
-    <a href="{{ route('admin.events.create') }}" class="btn btn-danger">
-        + Tambah Event
-    </a>
-
-    <a href="{{ route('admin.products') }}" class="btn btn-primary">
-        📦 Manajemen Produk
-    </a>
-</div>
 
 
 

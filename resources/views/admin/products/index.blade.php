@@ -1,50 +1,17 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
-<div class="container">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4">
 
     <h3 class="fw-bold mb-0">📚 Manajemen Produk</h3>
 
-    <form action="{{ route('logout') }}" method="POST">
-        @csrf
-        <button type="submit"
-                class="btn btn-outline-danger"
-                onclick="return confirm('Yakin ingin logout?')">
-            🚪 Logout
-        </button>
-    </form>
+    <a href="{{ route('admin.products.create') }}"
+       class="btn btn-outline-danger"
+       style="border-radius: 12px; font-weight:600;">
+        ➕ Tambah Produk
+    </a>
 
 </div>
-
-
-    {{-- BUTTON PRODUK & EVENT --}}
-    <div class="d-flex gap-2 mb-4">
-
-        {{-- Tambah Produk --}}
-        <a href="{{ route('admin.products.create') }}" 
-           class="btn btn-danger px-4 py-2"
-           style="border-radius: 12px;">
-           + Tambah Produk
-        </a>
-
-        {{-- Daftar DP --}}
-        <a href="{{ route('admin.dp.index') }}"
-            class="btn btn-outline-success px-4 py-2"
-            style="border-radius:12px;">
-            💰 Daftar DP
-        </a>
-
-
-        {{-- Kelola Event --}}
-        <a href="{{ route('admin.events.index') }}" 
-           class="btn btn-outline-danger px-4 py-2"
-           style="border-radius: 12px; font-weight:600;">
-           📅 Kelola Event
-        </a>
-
-    </div>
 
 
     {{-- Alert sukses --}}
