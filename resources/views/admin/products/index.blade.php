@@ -29,6 +29,14 @@
            + Tambah Produk
         </a>
 
+        {{-- Daftar DP --}}
+        <a href="{{ route('admin.dp.index') }}"
+            class="btn btn-outline-success px-4 py-2"
+            style="border-radius:12px;">
+            💰 Daftar DP
+        </a>
+
+
         {{-- Kelola Event --}}
         <a href="{{ route('admin.events.index') }}" 
            class="btn btn-outline-danger px-4 py-2"

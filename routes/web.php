@@ -78,6 +78,7 @@ Route::get('/ajax/search-produk', [ProductController::class, 'ajaxSearch'])
 Route::middleware('auth')->group(function () {
 
 
+    
 
      Route::get('/dashboard', [ProductController::class, 'adminIndex'])
         ->name('dashboard');
@@ -101,5 +102,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/events/{id}/edit', [EventController::class, 'edit'])->name('admin.events.edit');
     Route::post('/admin/events/{id}/update', [EventController::class, 'update'])->name('admin.events.update');
     Route::delete('/admin/events/{id}', [EventController::class, 'destroy'])->name('admin.events.delete');
+
+    // ADMIN DP
+    Route::get('/admin/dp', function () {
+        $dpList = \App\Models\DpConfirmation::latest()->get();
+        return view('admin.dp.index', compact('dpList'));
+    })->name('admin.dp.index');
+
+    Route::post('/admin/dp/{id}/confirm', function ($id) {
+        $dp = \App\Models\DpConfirmation::findOrFail($id);
+        $dp->update(['status' => 'confirmed']);
+
+        return redirect()->route('admin.dp.index')
+            ->with('success', 'DP berhasil dikonfirmasi.');
+    })->name('admin.dp.confirm');
 
 });
