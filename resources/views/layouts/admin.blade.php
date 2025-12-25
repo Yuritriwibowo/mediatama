@@ -51,7 +51,6 @@
             .sidebar {
                 position: relative;
                 width: 100%;
-                min-height: auto;
             }
             .content {
                 margin-left: 0;
@@ -66,34 +65,39 @@
     <h4 class="mb-4">MEDIATAMA</h4>
     <small class="text-light d-block mb-4">Admin Panel</small>
 
-    <a href="{{ route('admin.dashboard') }}"
+    {{-- DASHBOARD --}}
+    <a href="{{ route('dashboard') }}"
        class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
         🏠 Dashboard
     </a>
 
+    {{-- PRODUK --}}
     <a href="{{ route('admin.products') }}"
        class="{{ request()->routeIs('admin.products*') ? 'active' : '' }}">
         📦 Kelola Produk
     </a>
 
+    {{-- EVENT --}}
     <a href="{{ route('admin.events.index') }}"
        class="{{ request()->routeIs('admin.events*') ? 'active' : '' }}">
         📅 Kelola Event
     </a>
 
+    {{-- DP --}}
     <a href="{{ route('admin.dp.index') }}"
        class="{{ request()->routeIs('admin.dp*') ? 'active' : '' }}">
         💳 Konfirmasi DP
     </a>
 
+    {{-- LAPORAN --}}
     <a href="{{ route('admin.laporan.transaksi') }}"
-        class="{{ request()->routeIs('admin.laporan.transaksi*') ? 'active' : '' }}">
+       class="{{ request()->routeIs('admin.laporan.transaksi*') ? 'active' : '' }}">
         📄 Laporan Transaksi
     </a>
 
-
     <hr class="text-white">
 
+    {{-- LOGOUT --}}
     <a href="#"
        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
         🚪 Logout

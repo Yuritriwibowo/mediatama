@@ -201,19 +201,6 @@ class ProductController extends Controller
 
 
 
-    // =========================================
-    // DASHBOARD ADMIN
-    // =========================================
-    public function dashboard()
-    {
-        return view('admin.dashboard', [
-            'totalProduk'  => Product::count(),
-            'totalEvent'   => Event::count(),
-            'dpPending'    => DpConfirmation::where('status', 'pending')->count(),
-            'dpConfirmed'  => DpConfirmation::where('status', 'confirmed')->count(),
-            'latestDp'     => DpConfirmation::latest()->take(5)->get(),
-        ]);
-    }
 
     // =========================================
     // ADMIN LIST PRODUK (CRUD)

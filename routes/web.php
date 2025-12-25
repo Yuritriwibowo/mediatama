@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\EventController;
 use App\Models\Banner;
@@ -81,8 +82,10 @@ Route::middleware('auth')->group(function () {
 
     
 
-    Route::get('/admin/dashboard', [ProductController::class, 'dashboard'])
-    ->name('admin.dashboard');
+    // ===============================
+    // DASHBOARD
+    // ===============================
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
 
     // ===============================
