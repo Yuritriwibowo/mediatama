@@ -4,15 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminDashboardController;
-use App\Http\Controllers\BannerController;
 use App\Http\Controllers\EventController;
 use App\Models\Banner;
 use App\Models\Event;
 
-
 /*
 |--------------------------------------------------------------------------
-| PUBLIC ROUTES
+| PUBLIC ROUTES (USER TANPA LOGIN)
 |--------------------------------------------------------------------------
 */
 
@@ -21,10 +19,9 @@ use App\Models\Event;
 // ===============================
 Route::get('/', function () {
     $banners = Banner::all();
-    $events = \App\Models\Event::latest()->take(6)->get();
+    $events  = Event::latest()->take(6)->get();
     return view('home', compact('banners', 'events'));
 });
-
 
 // ===============================
 // PRODUK
@@ -33,14 +30,32 @@ Route::get('/produk', [ProductController::class, 'index'])->name('produk.index')
 Route::get('/produk/{id}', [ProductController::class, 'show'])->name('produk.show');
 
 // ===============================
-// CART
+// CART (USER TANPA LOGIN)
 // ===============================
 Route::get('/keranjang', [ProductController::class, 'cartPage'])->name('cart.page');
 Route::get('/cart/add/{id}', [ProductController::class, 'addToCart'])->name('cart.add');
 Route::post('/cart/increase/{id}', [ProductController::class, 'increaseQty'])->name('cart.increase');
 Route::post('/cart/decrease/{id}', [ProductController::class, 'decreaseQty'])->name('cart.decrease');
 Route::post('/cart/remove/{id}', [ProductController::class, 'removeItem'])->name('cart.remove');
-Route::get('/cart/checkout', [ProductController::class, 'checkoutWa'])->name('cart.checkout');
+
+// ===============================
+// CHECKOUT USER (TANPA LOGIN)
+// ===============================
+
+// halaman checkout + upload bukti
+Route::get('/cart/checkout', [ProductController::class, 'checkoutWa'])
+    ->name('cart.checkout.page');
+
+// simpan checkout / order (TANPA AUTH!)
+Route::post('/cart/checkout', [ProductController::class, 'checkoutStore'])
+    ->name('cart.checkout.store');
+
+// upload bukti pembayaran (USER)
+Route::get('/upload-bukti/{orderCode}', [ProductController::class, 'formUploadBukti'])
+    ->name('upload.bukti');
+
+Route::post('/upload-bukti/{orderCode}', [ProductController::class, 'storeUploadBukti'])
+    ->name('upload.bukti.store');
 
 // ===============================
 // COMPANY PAGES
@@ -55,15 +70,14 @@ Route::get('/events', [EventController::class, 'index'])->name('events.index');
 Route::get('/events/{slug}', [EventController::class, 'show'])->name('events.show');
 
 // ===============================
-// AUTH
+// AUTH (ADMIN SAJA)
 // ===============================
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-
 // ===============================
-// AJAX PRODUK (FILTER & SEARCH)
+// AJAX PRODUK
 // ===============================
 Route::get('/ajax/filter-kategori', [ProductController::class, 'ajaxFilterCategory'])
     ->name('ajax.filter.kategori');
@@ -71,22 +85,17 @@ Route::get('/ajax/filter-kategori', [ProductController::class, 'ajaxFilterCatego
 Route::get('/ajax/search-produk', [ProductController::class, 'ajaxSearch'])
     ->name('ajax.search.produk');
 
-
 /*
 |--------------------------------------------------------------------------
-| ADMIN ROUTES
+| ADMIN ROUTES (WAJIB LOGIN)
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-
-
-    
 
     // ===============================
     // DASHBOARD
     // ===============================
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-
 
     // ===============================
     // ADMIN PRODUK
@@ -107,29 +116,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/events/{id}/edit', [EventController::class, 'edit'])->name('admin.events.edit');
     Route::post('/admin/events/{id}/update', [EventController::class, 'update'])->name('admin.events.update');
     Route::delete('/admin/events/{id}', [EventController::class, 'destroy'])->name('admin.events.delete');
-    
-    // ===============================
-    // ADMIN LAPORAN TRANSAKSI
-    // ===============================
-    Route::get('/admin/laporan/transaksi', [ProductController::class, 'laporanTransaksi'])->name('admin.laporan.transaksi');
-    Route::get('/admin/laporan/transaksi/pdf', [ProductController::class, 'exportLaporanPdf'])->name('admin.laporan.transaksi.pdf');
-   
-    // ===============================
-    // UPLOAD BUKTI TRANSFER (SETELAH CHECKOUT)
-    // ===============================
-    Route::get('/upload-bukti/{id}', [ProductController::class, 'formUploadBukti'])->name('upload.bukti');
-    Route::post('/upload-bukti/{id}', [ProductController::class, 'storeUploadBukti'])->name('upload.bukti.store');
 
-    // CHECKOUT SIMPAN ORDER
-    Route::post('/cart/checkout', [ProductController::class, 'checkout'])->name('cart.checkout');
-
-
-
-
-   
     // ===============================
-    // ADMIN DP
+    // ADMIN LAPORAN & DP
     // ===============================
+    Route::get('/admin/laporan/transaksi', [ProductController::class, 'laporanTransaksi'])
+        ->name('admin.laporan.transaksi');
+
+    Route::get('/admin/laporan/transaksi/pdf', [ProductController::class, 'exportLaporanPdf'])
+        ->name('admin.laporan.transaksi.pdf');
+
     Route::get('/admin/dp', function () {
         $dpList = \App\Models\DpConfirmation::latest()->get();
         return view('admin.dp.index', compact('dpList'));
@@ -142,6 +138,4 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('admin.dp.index')
             ->with('success', 'DP berhasil dikonfirmasi.');
     })->name('admin.dp.confirm');
-
-
 });

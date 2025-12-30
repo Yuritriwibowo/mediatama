@@ -163,7 +163,7 @@
                 </div>
 
 
-                <form id="checkoutForm" action="{{ route('cart.checkout') }}" method="GET">
+                <form id="checkoutForm" action="{{ route('cart.checkout.page') }}" method="GET">
                 <button type="button"
                     onclick="checkoutProcess()"
                     class="btn btn-danger w-100 mb-3">

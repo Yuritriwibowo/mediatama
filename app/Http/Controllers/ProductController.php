@@ -246,29 +246,39 @@ class ProductController extends Controller
         $trx = DpConfirmation::findOrFail($id);
 
         $request->validate([
+            'nominal'       => 'required|numeric|min:1',
             'payment_proof' => 'required|image|mimes:jpg,jpeg,png|max:2048',
-            'payment_type'  => 'required|in:dp,full'
         ]);
 
-        // Upload file
+        // upload file
         $filename = time() . '_' . $request->payment_proof->getClientOriginalName();
         $request->payment_proof->move(public_path('uploads/bukti'), $filename);
 
-        // Hitung nominal
-        $expected = $request->payment_type === 'dp'
-            ? $trx->total_amount * 0.5
-            : $trx->total_amount;
+        // hitung DP minimal (50%)
+        $dpMinimal = $trx->total_amount * 0.5;
 
-        // Update otomatis
+        // tentukan status
+        if ($request->nominal < $dpMinimal) {
+            $status = 'nominal_tidak_sesuai';
+            $message = '⚠️ Nominal transfer belum sesuai DP minimal. Admin akan menghubungi Anda melalui WhatsApp.';
+        } else {
+            $status = 'menunggu_konfirmasi_admin';
+            $message = '✅ Bukti pembayaran berhasil dikirim. Menunggu konfirmasi admin melalui WhatsApp.';
+        }
+
+        // update transaksi
         $trx->update([
-            'payment_proof' => 'uploads/bukti/' . $filename,
-            'payment_type'  => $request->payment_type,
-            'status'        => $request->payment_type === 'dp' ? 'dp_confirmed' : 'paid'
+            'payment_proof'   => 'uploads/bukti/' . $filename,
+            'nominal_transfer'=> $request->nominal,
+            'status'          => $status,
         ]);
 
-        return redirect()->back()
-            ->with('success', 'Bukti transfer berhasil diupload dan otomatis dikonfirmasi.');
+        return back()->with(
+            $status === 'nominal_tidak_sesuai' ? 'warning' : 'success',
+            $message
+        );
     }
+
 
 
     // =========================================
